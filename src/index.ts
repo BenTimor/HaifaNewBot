@@ -1,20 +1,15 @@
 import * as dotenv from 'dotenv';
 import { HaifaBot } from './bot';
+import { HaifaScraper } from './scraper';
 import { Rotter } from './scraper/rotter';
 import { ScrapedData } from './scraper/types';
 
 dotenv.config();
 
-const bot = new HaifaBot();
-const rotter = new Rotter();
-
-function checkScrapedData(data: ScrapedData): boolean {
-    return data.content.includes("חיפה") || data.content.includes("לבנון");
-}
+const bot = new HaifaBot(process.env.DEMO === "true");
+const rotter = new HaifaScraper();
 
 rotter.scrape(data => {
-    if (!checkScrapedData(data)) return;
-
     const message =
         `${data.content}
         פורסם על ידי - ${data.credit}`;

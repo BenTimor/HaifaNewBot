@@ -1,8 +1,8 @@
 import { Rotter } from "./rotter";
-import { IScraper, ScrapedData } from "./types";
+import { BaseScraper, ScrapedData } from "./types";
 
-export class HaifaScraper extends IScraper {
-    private scrapers: IScraper[];
+export class HaifaScraper extends BaseScraper {
+    private scrapers: BaseScraper[];
     
     constructor() {
         super();
@@ -12,9 +12,15 @@ export class HaifaScraper extends IScraper {
         ];
     }
 
+    static checkScrapedData(data: ScrapedData): boolean {
+        return data.content.includes("חיפה") || data.content.includes("לבנון");
+    }
+
     scrape(callback: (data: ScrapedData) => void) {
         for (const scraper of this.scrapers) {
-            scraper.scrape(callback);
+            scraper.scrape((data) => {
+                HaifaScraper.checkScrapedData(data) && callback(data);
+            });
         }
     }
 }

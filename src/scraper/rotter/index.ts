@@ -1,8 +1,25 @@
-import { IScraper, ScrapedData } from "../types";
+import { BaseScraper, ScrapedData } from "../types";
 import { JSDOM } from "jsdom";
 import fetch from "node-fetch";
 
-export class Rotter extends IScraper {
+function parseDateString(dateString?: string): Date {
+    if (!dateString) {
+        return new Date(0);
+    }
+
+    const [hourText, dateText] = dateString.split(" ") || [];
+    const [hour, minutes] = hourText.split(":");
+    const [day, month] = dateText.split("/");
+
+    const date = new Date();
+    date.setDate(+day);
+    date.setMonth(+month - 1);
+    date.setHours(+hour, +minutes, 0, 0);
+
+    return date;
+}
+
+export class Rotter extends BaseScraper {
     private lastUpdate: Date;
     private interval: NodeJS.Timeout;
 
@@ -18,13 +35,7 @@ export class Rotter extends IScraper {
         }, 1000 * +(process.env.SCRAPE_WAIT || 60));
     }
 
-    private async startScraping() {
-        console.log("Starting to scrape data");
-
-        // Getting source and creating dom
-        const resp = await fetch("https://rotter.net/news/news.php");
-        const document = (new JSDOM(await resp.textConverted())).window.document;
-
+    private async scrapeFeed(document: Document) {
         // Getting news feed
         const news = document.getElementsByTagName("tbody")[3].getElementsByTagName("tr");
         let dateUpdated = false;
@@ -44,15 +55,7 @@ export class Rotter extends IScraper {
 
             if (newsParts.length < 3) continue;
 
-            // Creating date object
-            const [hourText, dateText] = newsParts[0].textContent?.split(" ") || [];
-            const [hour, minutes] = hourText.split(":");
-            const [day, month] = dateText.split("/");
-
-            const date = new Date();
-            date.setDate(+day);
-            date.setMonth(+month - 1);
-            date.setHours(+hour, +minutes, 0, 0);
+            const date = parseDateString(newsParts[0].textContent || undefined);
 
             // Set lastUpdate if not exist
             if (!this.lastUpdate) {
@@ -61,9 +64,9 @@ export class Rotter extends IScraper {
                 break;
             }
 
-            // Don't continue if we already updated the news from here
-            if (date < currentLastDate) break;
-            
+            // Don't continue if it's old news
+            if (date < currentLastDate) continue;
+
             // UPdate date if needed
             if (!dateUpdated) {
                 this.lastUpdate = date;
@@ -77,16 +80,44 @@ export class Rotter extends IScraper {
                 credit: newsParts[1].textContent || "ישנה בעיה עם הקרדיט"
             }
 
-            // Send the data to scrape callbacks
-            this.scrapingCallbacks.forEach(callback => {
-                callback(scrapeData);
-            });
+            this.callScrapeCallbacks(scrapeData);
         }
-
-        console.log("Data scraped and sent");
     }
 
-    scrape(callback: (data: ScrapedData) => void) {
-        this.scrapingCallbacks.push(callback);
+    private async scrapeMovingFeed(document: Document) {
+        const newsItems = document.querySelectorAll("div[style='margin-top: 10px;']");
+
+        const lastUpdateHour = this.lastUpdate.getHours();
+        const lastUpdateMinutes = this.lastUpdate.getMinutes();
+
+        newsItems.forEach(item => {
+            const timeText = item.getElementsByTagName("span")[0].textContent;
+            if (!timeText) return;
+
+            const [hour, minutes] = timeText.split(":") || [];
+
+            // We don't want if it's right after a new day or posted already
+            if (!(lastUpdateHour > (+hour+12) || (+hour >= lastUpdateHour && +minutes >= lastUpdateMinutes))) {
+                return;
+            }
+
+            this.callScrapeCallbacks({
+                content: item.getElementsByTagName("a")[0].textContent || "",
+                credit: "רוטר",
+            });
+        });
+    }
+
+    private async startScraping() {
+        console.log("Starting to scrape data");
+
+        // Getting source and creating dom
+        const resp = await fetch("https://rotter.net/news/news.php");
+        const document = (new JSDOM(await resp.textConverted())).window.document;
+
+        // Scraping main feed
+        await this.scrapeFeed(document);
+        // Scraping small bottom right moving feed
+        await this.scrapeMovingFeed(document);
     }
 }

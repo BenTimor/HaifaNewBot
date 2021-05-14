@@ -3,8 +3,16 @@ export type ScrapedData = {
     credit: string;
 }
 
-export abstract class IScraper {
+export class BaseScraper {
     protected scrapingCallbacks: ((data: ScrapedData) => void)[] = [];
 
-    abstract scrape(callback: (data: ScrapedData) => void): void;
+    scrape(callback: (data: ScrapedData) => void) {
+        this.scrapingCallbacks.push(callback);
+    }
+
+    callScrapeCallbacks(data: ScrapedData) {
+        this.scrapingCallbacks.forEach(callback => {
+            callback(data);
+        });
+    }
 }
