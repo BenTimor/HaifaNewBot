@@ -11,6 +11,8 @@ export class Rotter extends IScraper {
 
         this.lastUpdate = new Date();
 
+        this.startScraping();
+
         this.interval = setInterval(() => {
             this.startScraping();
         }, 1000 * +(process.env.SCRAPE_WAIT || 60));

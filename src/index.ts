@@ -9,12 +9,12 @@ const bot = new HaifaBot();
 const rotter = new Rotter();
 
 function checkScrapedData(data: ScrapedData): boolean {
-    return data.content.includes("חיפה");
+    return data.content.includes("חיפה") || data.content.includes("לבנון");
 }
 
 rotter.scrape(data => {
     if (!checkScrapedData(data)) return;
-    
+
     const message =
         `${data.content}
         פורסם על ידי - ${data.credit}`;
