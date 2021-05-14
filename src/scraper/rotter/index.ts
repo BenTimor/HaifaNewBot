@@ -14,16 +14,22 @@ export class Rotter extends IScraper {
 
         this.interval = setInterval(() => {
             this.startScraping();
-        }, 1000 * 60);
+        }, 1000 * 10);
     }
 
     private async startScraping() {
+        console.log("Starting to scrape data");
+
         // Getting source and creating dom
         const resp = await fetch("https://rotter.net/news/news.php");
         const document = (new JSDOM(await resp.textConverted())).window.document;
 
         // Getting news feed
         const news = document.getElementsByTagName("tbody")[3].getElementsByTagName("tr");
+        let dateUpdated = false;
+
+        // We're changing the lastUpdate in the loop, so we have to save it somewhere for conditions
+        const currentLastDate = this.lastUpdate;
 
         // Checking all of the news
         for (const newsItemNumber in news) {
@@ -45,19 +51,34 @@ export class Rotter extends IScraper {
             const date = new Date();
             date.setDate(+day);
             date.setMonth(+month - 1);
-            date.setHours(+hour, +minutes);
+            date.setHours(+hour, +minutes, 0, 0);
 
-            // Don't continue if we already updated the news from here
-            if (date < this.lastUpdate) break;
+            // Don't continue if we already updated the news from here            
+            if (date < currentLastDate) break;
+            
+            // UPdate date if needed
+            if (!dateUpdated) {
+                this.lastUpdate = date;
+                this.lastUpdate.setSeconds(1);
+                dateUpdated = true;
+            };
+
+            // Organize our data
+            const scrapeData: ScrapedData = {
+                content: newsParts[2].textContent || "ישנה בעיה עם המבזק",
+                credit: newsParts[1].textContent || "ישנה בעיה עם הקרדיט"
+            }
+
+            // Check if it's related to Haifa
+            if (!this.checkScrapedData(scrapeData)) continue;
 
             // Send the data to scrape callbacks
             this.scrapingCallbacks.forEach(callback => {
-                callback({
-                    content: newsParts[2].textContent || "ישנה בעיה עם המבזק",
-                    credit: newsParts[1].textContent || "ישנה בעיה עם הקרדיט"
-                });
+                callback(scrapeData);
             });
         }
+
+        console.log("Data scraped and sent");
     }
 
     scrape(callback: (data: ScrapedData) => void) {
