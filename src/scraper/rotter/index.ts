@@ -101,8 +101,13 @@ export class Rotter extends BaseScraper {
                 return;
             }
 
+            const text = item.getElementsByTagName("a")[0].textContent || "";
+
+            // Rotter has some 'announcement' topics like this
+            if (text.includes("אשכול מרוכז")) return;
+
             this.callScrapeCallbacks({
-                content: item.getElementsByTagName("a")[0].textContent || "",
+                content: text,
                 credit: "רוטר",
             });
         });

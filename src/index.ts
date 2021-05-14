@@ -1,8 +1,6 @@
 import * as dotenv from 'dotenv';
 import { HaifaBot } from './bot';
 import { HaifaScraper } from './scraper';
-import { Rotter } from './scraper/rotter';
-import { ScrapedData } from './scraper/types';
 
 dotenv.config();
 
