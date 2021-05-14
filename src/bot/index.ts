@@ -1,8 +1,8 @@
 import { Telegram } from "./telegram";
-import { BotType } from "./types";
+import { IBot } from "./types";
 
-export class HaifaBot implements BotType {
-    private bots: BotType[];
+export class HaifaBot implements IBot {
+    private bots: IBot[];
     
     constructor() {
         const telegramToken = process.env.TOKEN;
