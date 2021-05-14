@@ -11,10 +11,15 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^9.0.2",
+    "encoding": "^0.1.13",
+    "jsdom": "^16.5.3",
+    "node-fetch": "^2.6.1",
     "node-telegram-bot-api": "^0.53.0"
   },
   "devDependencies": {
-    "@types/node-telegram-bot-api": "^0.51.1",
-    "@types/node": "^15.0.3"
+    "@types/jsdom": "^16.2.10",
+    "@types/node": "^15.0.3",
+    "@types/node-fetch": "^2.5.10",
+    "@types/node-telegram-bot-api": "^0.51.1"
   }
 }
