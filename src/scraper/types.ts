@@ -4,9 +4,7 @@ export type ScrapedData = {
 }
 
 export abstract class IScraper {
-    abstract scrape(callback: (data: ScrapedData) => void): void;
+    protected scrapingCallbacks: ((data: ScrapedData) => void)[] = [];
 
-    checkScrapedData(data: ScrapedData): boolean {
-        return data.content.includes("חיפה");
-    }
+    abstract scrape(callback: (data: ScrapedData) => void): void;
 }

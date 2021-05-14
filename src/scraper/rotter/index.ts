@@ -3,7 +3,6 @@ import { JSDOM } from "jsdom";
 import fetch from "node-fetch";
 
 export class Rotter extends IScraper {
-    private scrapingCallbacks: ((data: ScrapedData) => void)[] = [];
     private lastUpdate: Date;
     private interval: NodeJS.Timeout;
 
@@ -53,7 +52,14 @@ export class Rotter extends IScraper {
             date.setMonth(+month - 1);
             date.setHours(+hour, +minutes, 0, 0);
 
-            // Don't continue if we already updated the news from here            
+            // Set lastUpdate if not exist
+            if (!this.lastUpdate) {
+                this.lastUpdate = date;
+                this.lastUpdate.setSeconds(1);
+                break;
+            }
+
+            // Don't continue if we already updated the news from here
             if (date < currentLastDate) break;
             
             // UPdate date if needed
@@ -68,9 +74,6 @@ export class Rotter extends IScraper {
                 content: newsParts[2].textContent || "ישנה בעיה עם המבזק",
                 credit: newsParts[1].textContent || "ישנה בעיה עם הקרדיט"
             }
-
-            // Check if it's related to Haifa
-            if (!this.checkScrapedData(scrapeData)) continue;
 
             // Send the data to scrape callbacks
             this.scrapingCallbacks.forEach(callback => {
