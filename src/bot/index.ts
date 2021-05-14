@@ -14,7 +14,6 @@ export class HaifaBot implements IBot {
 
         this.bots = [
             new Telegram(telegramToken, telegramChatId),
-
         ];
     }
 

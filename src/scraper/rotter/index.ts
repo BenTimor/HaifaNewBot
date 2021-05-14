@@ -14,7 +14,7 @@ export class Rotter extends IScraper {
 
         this.interval = setInterval(() => {
             this.startScraping();
-        }, 1000 * 10);
+        }, 1000 * +(process.env.SCRAPE_WAIT || 60));
     }
 
     private async startScraping() {

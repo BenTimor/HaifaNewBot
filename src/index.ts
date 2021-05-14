@@ -4,8 +4,8 @@ import { Rotter } from './scraper/rotter';
 
 dotenv.config();
 
-const rotter = new Rotter();
 const bot = new HaifaBot();
+const rotter = new Rotter();
 
 rotter.scrape(data => {
     const message =
