@@ -1,5 +1,6 @@
 import { Rotter } from "./rotter";
 import { BaseScraper, ScrapedData } from "./types";
+import { Website } from "./website";
 
 const BLOCKED_CREDITS = process.env.BLOCKED_CREDITS?.split(",");
 
@@ -10,7 +11,8 @@ export class HaifaScraper extends BaseScraper {
         super();
         // All scrapers
         this.scrapers = [
-            new Rotter()
+            // new Website(),
+            new Rotter(),
         ];
     }
 

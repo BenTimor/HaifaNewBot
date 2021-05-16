@@ -13,11 +13,13 @@
     "dotenv": "^9.0.2",
     "encoding": "^0.1.13",
     "jsdom": "^16.5.3",
+    "luxon": "^1.27.0",
     "node-fetch": "^2.6.1",
     "node-telegram-bot-api": "^0.53.0"
   },
   "devDependencies": {
     "@types/jsdom": "^16.2.10",
+    "@types/luxon": "^1.26.5",
     "@types/node": "^15.0.3",
     "@types/node-fetch": "^2.5.10",
     "@types/node-telegram-bot-api": "^0.51.1"
