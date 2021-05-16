@@ -1,6 +1,8 @@
 import { Rotter } from "./rotter";
 import { BaseScraper, ScrapedData } from "./types";
 
+const BLOCKED_CREDITS = process.env.BLOCKED_CREDITS?.split(",");
+
 export class HaifaScraper extends BaseScraper {
     private scrapers: BaseScraper[];
     
@@ -13,7 +15,7 @@ export class HaifaScraper extends BaseScraper {
     }
 
     static checkScrapedData(data: ScrapedData): boolean {
-        return data.content.includes("חיפה") || data.content.includes("לבנון");
+        return data.content.includes("חיפה") && !(BLOCKED_CREDITS?.includes(data.credit));
     }
 
     scrape(callback: (data: ScrapedData) => void) {

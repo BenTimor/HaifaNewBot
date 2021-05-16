@@ -3,6 +3,7 @@ import { ScrapedDataBase } from "../data";
 export type ScrapedData = {
     content: string;
     credit: string;
+    url?: string;
 }
 
 export class BaseScraper {

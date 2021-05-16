@@ -77,7 +77,8 @@ export class Rotter extends BaseScraper {
             // Organize our data
             const scrapeData: ScrapedData = {
                 content: newsParts[2].textContent || "ישנה בעיה עם המבזק",
-                credit: newsParts[1].textContent || "ישנה בעיה עם הקרדיט"
+                credit: newsParts[1].textContent || "ישנה בעיה עם הקרדיט",
+                url: newsParts[2].getElementsByTagName("a")[0].getAttribute("href") || undefined,
             }
 
             this.callScrapeCallbacks(scrapeData);
@@ -101,7 +102,9 @@ export class Rotter extends BaseScraper {
                 return;
             }
 
-            const text = item.getElementsByTagName("a")[0].textContent || "";
+            const textElem = item.getElementsByTagName("a")[0];
+            const text = textElem.textContent || "";
+            const link = textElem.getAttribute("href");
 
             // Rotter has some 'announcement' topics like this
             if (text.includes("אשכול מרוכז")) return;
@@ -109,6 +112,7 @@ export class Rotter extends BaseScraper {
             this.callScrapeCallbacks({
                 content: text,
                 credit: "רוטר",
+                url: link || undefined,
             });
         });
     }

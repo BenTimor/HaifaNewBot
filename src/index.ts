@@ -10,6 +10,7 @@ const rotter = new HaifaScraper();
 rotter.scrape(data => {
     const message =
         `${data.content}
-        פורסם על ידי - ${data.credit}`;
+        פורסם על ידי - ${data.credit}
+        ${data.url || ""}`;
     bot.sendMessage(message);
 });
