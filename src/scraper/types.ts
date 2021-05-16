@@ -1,3 +1,5 @@
+import { ScrapedDataBase } from "../data";
+
 export type ScrapedData = {
     content: string;
     credit: string;
@@ -11,6 +13,9 @@ export class BaseScraper {
     }
 
     callScrapeCallbacks(data: ScrapedData) {
+        if (ScrapedDataBase.hasScrapedData(data)) return;
+
+        ScrapedDataBase.addScrapedData(data);
         this.scrapingCallbacks.forEach(callback => {
             callback(data);
         });
