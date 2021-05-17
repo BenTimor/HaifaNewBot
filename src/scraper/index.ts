@@ -1,3 +1,4 @@
+import { N12 } from "./n12";
 import { Rotter } from "./rotter";
 import { BaseScraper, ScrapedData } from "./types";
 import { Website } from "./website";
@@ -13,6 +14,7 @@ export class HaifaScraper extends BaseScraper {
         this.scrapers = [
             // new Website(),
             new Rotter(),
+            new N12(),
         ];
     }
 
