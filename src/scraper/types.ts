@@ -5,6 +5,7 @@ export type ScrapedData = {
     content: string;
     credit: string;
     url?: string;
+    validated?: boolean;
 }
 
 export abstract class BaseScraper {

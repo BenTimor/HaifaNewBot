@@ -1,3 +1,4 @@
+import { Haipo } from "./haipo";
 import { N12 } from "./n12";
 import { Rotter } from "./rotter";
 import { BaseScraper, ScrapedData } from "./types";
@@ -15,6 +16,7 @@ export class HaifaScraper {
             // new Website(),
             new Rotter(),
             new N12(),
+            new Haipo(),
         ];
     }
 
@@ -25,7 +27,7 @@ export class HaifaScraper {
     onScrape(callback: (data: ScrapedData) => void) {
         for (const scraper of this.scrapers) {
             scraper.onScrape((data) => {
-                HaifaScraper.checkScrapedData(data) && callback(data);
+                (data.validated || HaifaScraper.checkScrapedData(data)) && callback(data);
             });
         }
     }
