@@ -20,7 +20,7 @@ function parseDateString(dateString?: string): Date {
     const date = new Date();
     date.setDate(+day);
     date.setMonth(+month - 1);
-    date.setHours(+hour, +minutes, 0, 0);
+    date.setHours(+hour-1, +minutes, 0, 0);
 
     return date;
 }
