@@ -58,6 +58,8 @@ export class Rotter extends BaseScraper {
 
             // Don't continue if it's old news
             if (date < currentLastDate) continue;
+            console.log(`We're calling callbacks because item time ${date.toMillis()} (${date.hour}:${date.minute}:${date.second}) is bigger than current time ${currentLastDate.toMillis()} (${currentLastDate.hour}:${currentLastDate.minute}:${currentLastDate.second})`);
+
 
             // Organize our data
             const scrapeData: ScrapedData = {
