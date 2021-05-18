@@ -18,7 +18,6 @@ export class N12 extends BaseScraper {
             const reportTime = DateTime.fromMillis(report.publishedDate).setZone("UTC+3");
 
             if (reportTime < currentTime) continue;
-            console.log(`[N12] We're calling callbacks because item time ${reportTime.toMillis()} (${reportTime.hour}:${reportTime.minute}:${reportTime.second}) is bigger than current time ${currentTime.toMillis()} (${currentTime.hour}:${currentTime.minute}:${currentTime.second})`);
 
             this.callScrapeCallbacks({
                 content: report.messageContent,

@@ -23,8 +23,6 @@ export class Website extends BaseScraper {
             const itemTime = DateTime.fromJSDate(new Date(item.time)).setZone("UTC+3");
 
             if (itemTime < currentTime) continue;
-            console.log(`We're calling callbacks because item time ${itemTime.toMillis()} (${itemTime.hour}:${itemTime.minute}:${itemTime.second}) is bigger than current time ${currentTime.toMillis()} (${currentTime.hour}:${currentTime.minute}:${currentTime.second})`);
-            
 
             this.callScrapeCallbacks({
                 content: item.description,
