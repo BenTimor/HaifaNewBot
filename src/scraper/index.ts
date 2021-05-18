@@ -19,6 +19,8 @@ export class HaifaScraper extends BaseScraper {
     }
 
     static checkScrapedData(data: ScrapedData): boolean {
+        console.log(`Blocked Credits: ${BLOCKED_CREDITS}. Credit: ${data.credit}`);
+        
         return data.content.includes("חיפה") && !(BLOCKED_CREDITS?.includes(data.credit));
     }
 
