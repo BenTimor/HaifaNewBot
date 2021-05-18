@@ -20,7 +20,7 @@ export class Website extends BaseScraper {
         const currentTime = this.lastUpdate;
         
         for (const item of body) {
-            const itemTime = DateTime.fromJSDate(new Date(item.time)).setZone("Israel");
+            const itemTime = DateTime.fromJSDate(new Date(item.time)).setZone("UTC+3");
 
             if (itemTime < currentTime) continue;
 

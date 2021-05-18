@@ -15,7 +15,7 @@ export class N12 extends BaseScraper {
         const currentTime = this.lastUpdate;
 
         for (const report of reports) {
-            const reportTime = DateTime.fromMillis(report.publishedDate).setZone("Israel");
+            const reportTime = DateTime.fromMillis(report.publishedDate).setZone("UTC+3");
 
             if (reportTime < currentTime) continue;
 

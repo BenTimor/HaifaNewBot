@@ -3,7 +3,7 @@ import { JSDOM } from "jsdom";
 import fetch from "node-fetch";
 import { DateTime } from "luxon";
 
-const ZONE = "Israel";
+const ZONE = "UTC+3";
 
 function parseDateString(dateString?: string): Date {
     if (!dateString) {
