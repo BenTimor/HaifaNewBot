@@ -32,6 +32,6 @@ export class BaseScraper {
     }
 
     getTime(): DateTime {
-        return DateTime.now().setZone(this.timeZone || "Israel");
+        return DateTime.now().setZone(this.timeZone || "UTC+3");
     }
 }
