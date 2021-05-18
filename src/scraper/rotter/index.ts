@@ -5,21 +5,26 @@ import { DateTime } from "luxon";
 
 const ZONE = "UTC+3";
 
-function parseDateString(dateString?: string): Date {
+function parseDateString(dateString?: string): DateTime {
     if (!dateString) {
-        return new Date(0);
+        return DateTime.fromMillis(0);
     }
 
     const [hourText, dateText] = dateString.split(" ") || [];
     const [hour, minutes] = hourText.split(":");
     const [day, month] = dateText.split("/");
 
-    const date = new Date();
-    date.setDate(+day);
-    date.setMonth(+month - 1);
-    date.setHours(+hour-1, +minutes, 0, 0);
+    // const date = new Date();
+    // date.setDate(+day);
+    // date.setMonth(+month - 1);
+    // date.setHours(+hour-1, +minutes, 0, 0);
 
-    return date;
+    return DateTime.now().setZone("UTC+3").set({
+        hour: +hour,
+        minute: +minutes,
+        day: +day,
+        month: +month,
+    });
 }
 
 export class Rotter extends BaseScraper {
@@ -53,7 +58,7 @@ export class Rotter extends BaseScraper {
 
             if (newsParts.length < 3) continue;
 
-            const date = DateTime.fromJSDate(parseDateString(newsParts[0].textContent || undefined)).setZone(ZONE);
+            const date = parseDateString(newsParts[0].textContent || undefined);            
 
             // Don't continue if it's old news
             if (date < this.lastUpdate) continue;
