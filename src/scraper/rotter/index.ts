@@ -14,6 +14,9 @@ function parseDateString(dateString?: string): Date {
     const [hour, minutes] = hourText.split(":");
     const [day, month] = dateText.split("/");
 
+    console.log(`Building date from hour ${hourText} date ${dateText} hour ${hour} minutes ${minutes} day ${day} month ${month}`);
+    
+
     const date = new Date();
     date.setDate(+day);
     date.setMonth(+month - 1);
