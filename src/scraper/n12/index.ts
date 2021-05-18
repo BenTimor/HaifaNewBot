@@ -7,13 +7,12 @@ const URL = "https://www.mako.co.il/AjaxPage?jspName=getNewsChatMessages.jsp&cou
 export class N12 extends BaseScraper {
     async scrape(): Promise<ScrapedData[]> {
         const reports = await (await fetch(URL)).json();
-        const currentTime = this.lastUpdate;
         const scrapes: ScrapedData[] = [];
 
         for (const report of reports) {
             const reportTime = DateTime.fromMillis(report.publishedDate).setZone("UTC+3");
 
-            if (reportTime < currentTime) continue;
+            if (reportTime < this.lastUpdate) continue;
 
             scrapes.push({
                 content: report.messageContent,
