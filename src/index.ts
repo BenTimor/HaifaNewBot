@@ -5,9 +5,9 @@ import { HaifaScraper } from './scraper';
 dotenv.config();
 
 const bot = new HaifaBot(process.env.DEMO === "true");
-const rotter = new HaifaScraper();
+const scraper = new HaifaScraper();
 
-rotter.scrape(data => {
+scraper.onScrape(data => {
     const message =
         `${data.content}
         פורסם על ידי - ${data.credit}

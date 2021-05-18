@@ -1,28 +1,26 @@
 import { DateTime } from "luxon";
 import fetch from "node-fetch";
-import { BaseScraper } from "../types";
+import { BaseScraper, ScrapedData } from "../types";
 
 const URL = "https://www.mako.co.il/AjaxPage?jspName=getNewsChatMessages.jsp&count=100&page=1&topic=1";
 
 export class N12 extends BaseScraper {
-    constructor() {
-        super();
-        this.scrapeChat();
-    }
-
-    async scrapeChat() {
+    async scrape(): Promise<ScrapedData[]> {
         const reports = await (await fetch(URL)).json();
         const currentTime = this.lastUpdate;
+        const scrapes: ScrapedData[] = [];
 
         for (const report of reports) {
             const reportTime = DateTime.fromMillis(report.publishedDate).setZone("UTC+3");
 
             if (reportTime < currentTime) continue;
 
-            this.callScrapeCallbacks({
+            scrapes.push({
                 content: report.messageContent,
                 credit: `${report.reporter.reporter.name} / צ'אט הכתבים`
             });
         }
+
+        return scrapes;
     }
 }

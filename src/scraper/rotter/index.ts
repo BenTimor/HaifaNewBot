@@ -23,24 +23,23 @@ function parseDateString(dateString?: string): Date {
 }
 
 export class Rotter extends BaseScraper {
-    private interval: NodeJS.Timeout;
+    async scrape(): Promise<ScrapedData[]> {
+        // Getting source and creating dom
+        const resp = await fetch("https://rotter.net/news/news.php");
+        const document = (new JSDOM(await resp.textConverted())).window.document;
 
-    constructor() {
-        super();
-
-        this.startScraping();
-
-        this.interval = setInterval(() => {
-            this.startScraping();
-        }, 1000 * +(process.env.SCRAPE_WAIT || 60));
+        return [
+            ...this.scrapeFeed(document),
+            ...this.scrapeMovingFeed(document),
+        ]
     }
 
-    private async scrapeFeed(document: Document) {
+    private scrapeFeed(document: Document) {
         // Getting news feed
         const news = document.getElementsByTagName("tbody")[3].getElementsByTagName("tr");
 
         // We're changing the lastUpdate in the loop, so we have to save it somewhere for conditions
-        const currentLastDate = this.lastUpdate;
+        const scrapes: ScrapedData[] = [];
 
         // Checking all of the news
         for (const newsItemNumber in news) {
@@ -57,7 +56,7 @@ export class Rotter extends BaseScraper {
             const date = DateTime.fromJSDate(parseDateString(newsParts[0].textContent || undefined)).setZone(ZONE);
 
             // Don't continue if it's old news
-            if (date < currentLastDate) continue;
+            if (date < this.lastUpdate) continue;
 
             // Organize our data
             const scrapeData: ScrapedData = {
@@ -66,12 +65,16 @@ export class Rotter extends BaseScraper {
                 url: newsParts[2].getElementsByTagName("a")[0].getAttribute("href") || undefined,
             }
 
-            this.callScrapeCallbacks(scrapeData);
+            scrapes.push(scrapeData);
         }
+        
+        return scrapes;
     }
 
-    private async scrapeMovingFeed(document: Document) {
+    private scrapeMovingFeed(document: Document) {
         const newsItems = document.querySelectorAll("div[style='margin-top: 10px;']");
+
+        const scrapes: ScrapedData[] = [];
 
         const lastUpdateHour = this.lastUpdate.hour;
         const lastUpdateMinutes = this.lastUpdate.minute;
@@ -95,24 +98,13 @@ export class Rotter extends BaseScraper {
             // Rotter has some 'announcement' topics like this
             if (text.includes("אשכול מרוכז")) return;
 
-            this.callScrapeCallbacks({
+            scrapes.push({
                 content: text,
                 credit: "רוטר",
                 url: link || undefined,
             });
         });
-    }
 
-    private async startScraping() {
-        console.log("Starting to scrape data");
-
-        // Getting source and creating dom
-        const resp = await fetch("https://rotter.net/news/news.php");
-        const document = (new JSDOM(await resp.textConverted())).window.document;
-
-        // Scraping main feed
-        await this.scrapeFeed(document);
-        // Scraping small bottom right moving feed
-        await this.scrapeMovingFeed(document);
+        return scrapes;
     }
 }

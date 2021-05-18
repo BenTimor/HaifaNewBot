@@ -3,13 +3,11 @@ import { Rotter } from "./rotter";
 import { BaseScraper, ScrapedData } from "./types";
 import { Website } from "./website";
 
-export class HaifaScraper extends BaseScraper {
+export class HaifaScraper {
     private scrapers: BaseScraper[];
     static BLOCKED_CREDITS;
     
     constructor() {
-        super();
-
         HaifaScraper.BLOCKED_CREDITS = process.env.BLOCKED_CREDITS?.split(",");
 
         // All scrapers
@@ -24,9 +22,9 @@ export class HaifaScraper extends BaseScraper {
         return data.content.includes("חיפה") && !(HaifaScraper.BLOCKED_CREDITS?.includes(data.credit));
     }
 
-    scrape(callback: (data: ScrapedData) => void) {
+    onScrape(callback: (data: ScrapedData) => void) {
         for (const scraper of this.scrapers) {
-            scraper.scrape((data) => {
+            scraper.onScrape((data) => {
                 HaifaScraper.checkScrapedData(data) && callback(data);
             });
         }

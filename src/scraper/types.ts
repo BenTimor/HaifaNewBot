@@ -7,7 +7,7 @@ export type ScrapedData = {
     url?: string;
 }
 
-export class BaseScraper {
+export abstract class BaseScraper {
     protected scrapingCallbacks: ((data: ScrapedData) => void)[] = [];
     protected lastUpdate: DateTime;
     static showedWarning: boolean = false;
@@ -15,20 +15,32 @@ export class BaseScraper {
     constructor(private timeZone?: string) {
         this.lastUpdate = this.getTime();
         BaseScraper.showedWarning = BaseScraper.showedWarning || console.log(`Make sure the hour in Israel now is ${this.lastUpdate.hour}`) || true;
+    
+        const callScrape = async () => {
+            this.callScrapeCallbacks(await this.scrape());
+        }
+
+        callScrape();
+
+        setInterval(callScrape, 1000 * +(process.env.SCRAPE_WAIT || 60));
     }
 
-    scrape(callback: (data: ScrapedData) => void) {
+    abstract scrape(): Promise<ScrapedData[]>;
+
+    onScrape(callback: (data: ScrapedData) => void) {
         this.scrapingCallbacks.push(callback);
     }
 
-    callScrapeCallbacks(data: ScrapedData) {
-        this.lastUpdate = this.getTime();
-        if (ScrapedDataBase.hasScrapedData(data)) return;
+    callScrapeCallbacks(datas: ScrapedData[]) {
+        datas.forEach(data => {
+            this.lastUpdate = this.getTime();
+            if (ScrapedDataBase.hasScrapedData(data)) return;
 
-        ScrapedDataBase.addScrapedData(data);
-        this.scrapingCallbacks.forEach(callback => {
-            callback(data);
-        });
+            ScrapedDataBase.addScrapedData(data);
+            this.scrapingCallbacks.forEach(callback => {
+                callback(data);
+            });
+        })
     }
 
     getTime(): DateTime {
