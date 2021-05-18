@@ -20,7 +20,7 @@ export class N12 extends BaseScraper {
             if (reportTime < currentTime) continue;
 
             this.callScrapeCallbacks({
-                content: report.messageContent + " חיפה",
+                content: report.messageContent,
                 credit: `${report.reporter.reporter.name} / צ'אט הכתבים`
             });
         }
