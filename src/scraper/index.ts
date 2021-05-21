@@ -6,10 +6,12 @@ import { Website } from "./website";
 
 export class HaifaScraper {
     private scrapers: BaseScraper[];
-    static BLOCKED_CREDITS;
-    
+    static BLOCKED_CREDITS: string[];
+    static BLOCKED_URLS: string[];
+
     constructor() {
-        HaifaScraper.BLOCKED_CREDITS = process.env.BLOCKED_CREDITS?.split(",");
+        HaifaScraper.BLOCKED_CREDITS = process.env.BLOCKED_CREDITS?.split(",") || [];
+        HaifaScraper.BLOCKED_URLS = process.env.BLOCKED_URLS?.split(",") || [];
 
         // All scrapers
         this.scrapers = [
@@ -21,7 +23,9 @@ export class HaifaScraper {
     }
 
     static checkScrapedData(data: ScrapedData): boolean {
-        return data.content.includes("חיפה") && !(HaifaScraper.BLOCKED_CREDITS?.includes(data.credit));
+        return data.content.includes("חיפה") &&
+            !(HaifaScraper.BLOCKED_CREDITS?.includes(data.credit)) &&
+            !(HaifaScraper.BLOCKED_URLS.filter(url => data.url && data.url.includes(url)).length > 0);
     }
 
     onScrape(callback: (data: ScrapedData) => void) {
